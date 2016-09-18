@@ -1,0 +1,17 @@
+{% load staticfiles %}
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SketchFiddle runner</title>
+
+    <script type="text/javascript" src="https://d1jlf623bx36qa.cloudfront.net/api/sketchfab-viewer-1.0.0.js"></script>
+    <script src="{% static "js/sketchfiddle-run.js" %}"></script>
+</head>
+
+<body style="margin:0;padding:0;overflow:hidden;">
+
+    <iframe src="" style="width:100%;border:0;" height="600px;" id="api-frame" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+
+</body>
+</html>
