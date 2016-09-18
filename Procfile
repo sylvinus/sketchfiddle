@@ -1,1 +1,1 @@
-web: waitress-serve --port=$PORT sketchfiddle.wsgi:application
+web: gunicorn sketchfiddle.wsgi --log-file -
