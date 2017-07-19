@@ -1,32 +1,83 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .models import Fiddle
 
 
-@csrf_exempt
-def api_get_fiddle(request):
-
-    default_fiddle = """
-var iframe = document.getElementById( 'api-frame' );
+DEFAULT_FIDDLE = """
+var iframe = document.getElementById('sketchfab-embed');
 var version = '1.0.0';
-var urlid = '7w7pAfrCfjovwykkEeRFLGw5SXS';
-var client = new Sketchfab( version, iframe );
+var modelid = '7w7pAfrCfjovwykkEeRFLGw5SXS';
+var client = new Sketchfab(version, iframe);
 
-client.init( urlid, {
-    success: function onSuccess( api ){
+client.init(modelid, {
+    success: function onSuccess(api){
         api.start();
-        api.addEventListener( 'viewerready', function() {
+        api.addEventListener('viewerready', function() {
 
             // API is ready to use
             // Insert your code here
-            console.log( 'Viewer is ready' );
+            console.log('Viewer is ready');
 
-        } );
+        });
     },
     error: function onError() {
-        console.log( 'Viewer error' );
+        console.log('Viewer error');
     }
-} );
+});
+""".strip()
 
-    """.strip()
 
-    return JsonResponse({"code_js": default_fiddle})
+def get_fiddle(_id):
+    if _id == "default":
+        return Fiddle(code_js=DEFAULT_FIDDLE, id="default", name="New project")
+    else:
+        return Fiddle.objects.get(id=_id)
+
+
+@csrf_exempt
+def api_fiddle(request, _id):
+    if request.method == 'GET':
+
+        try:
+            fiddle = get_fiddle(_id)
+        except:
+            return JsonResponse({
+                "error": "Doesn't exist"
+            })
+        return JsonResponse(fiddle.dump())
+
+    elif request.method == 'POST':
+
+        fiddle = None
+        if _id != "default":
+            try:
+                fiddle = get_fiddle(_id)
+            except:
+                return JsonResponse({
+                    "error": "Doesn't exist"
+                })
+
+            # Fiddles from logged-in users can only be edited by them. If not, saved as a new one.
+            if fiddle.user:
+                if not request.user.is_authenticated() or fiddle.user != request.user:
+                    fiddle = None
+
+        # Create new fiddle
+        if not fiddle:
+            kwargs = {
+                "code_js": request.POST["code_js"],
+                "name": request.POST["name"],
+            }
+            if request.user.is_authenticated():
+                kwargs["user"] = request.user
+            fiddle = Fiddle.objects.create(**kwargs)
+
+        # Save existing
+        else:
+            fiddle.code_js = request.POST["code_js"]
+            fiddle.name = request.POST["name"]
+            if request.user.is_authenticated():
+                fiddle.user = request.user
+            fiddle.save()
+
+        return JsonResponse(fiddle.dump())

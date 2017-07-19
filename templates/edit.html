@@ -32,23 +32,24 @@
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container-fluid">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">SketchFiddle</a>
+          <a class="navbar-brand" href="#">Sketchfiddle</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <!-- <li><a href="#">Save</a></li> -->
-            <li><a href="#" class="active js-sketchfiddle-button-run">Run</a></li>
+            <li><a href="#" class="js-sketchfiddle-button-save">Save</a></li>
+            <li><a href="#" class="js-sketchfiddle-button-embed">Embed</a></li>
+
+            {% if not user.is_authenticated %}
+              <li><a href="{% url 'social:begin' 'twitter' %}">Login</a></li>
+            {% else %}
+              <li><a href="{% url 'logout' %}">Logout {{ user.username }}</a></li>
+            {% endif %}
+            <!-- <li><a href="#" class="active js-sketchfiddle-button-run">Run</a></li> -->
 
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="https://sketchfab.com/developers/viewer/functions">API Reference</a></li>
-            <li><a href="https://github.com/sylvinus/sketchfiddle">GitHub</a></li>
+            <li><a target="_blank" href="https://sketchfab.com/developers/viewer/functions">API Reference</a></li>
+            <li><a target="_blank" href="https://github.com/sylvinus/sketchfiddle">GitHub</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -60,7 +61,7 @@
         <div class="row">
 
             <div class="col-md-7">
-                <iframe sandbox="allow-scripts" id="editor-iframe" src="about:blank"></iframe>
+                <iframe sandbox="allow-scripts" id="editor-iframe" src="about:blank" style="height:600px"></iframe>
             </div>
 
             <div class="col-md-5">
@@ -72,6 +73,23 @@
 
     </div> <!-- /container -->
 
+    <div class="modal fade" tabindex="-1" role="dialog" id="embed-modal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Embed this Sketchfiddle</h4>
+          </div>
+          <div class="modal-body">
+            <p>Use this code to embed this Sketchfiddle in your website:</p>
+            <textarea style="width:100%;height:70px;" readonly id="embed-code"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
     <script src="{% static "js/codemirror.js" %}"></script>
     <script src="{% static "js/codemirror-javascript.js" %}"></script>

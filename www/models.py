@@ -7,11 +7,21 @@ from django.contrib.auth.models import User
 class Fiddle(models.Model):
     """ A saved fiddle """
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, blank=True, null=True)
 
     name = models.CharField(max_length=255, blank=True, null=True)
 
     code_js = models.TextField(blank=True, null=False)
 
-    created = models.DateField(null=False)
-    updated = models.DateField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def dump(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "code_js": self.code_js
+        }
+
+    def __unicode__(self):
+        return self.name

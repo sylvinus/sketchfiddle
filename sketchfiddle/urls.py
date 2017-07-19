@@ -13,14 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from www import views, api
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', views.EditView.as_view()),
-    url(r'^edit/(?P<id>[a-zA-Z0-9])?', views.EditView.as_view()),
-    url(r'^run/(?P<id>[a-zA-Z0-9])?', views.RunView.as_view()),
-    url(r'^api/fiddle', api.api_get_fiddle)
+    url(r'^$', views.EditView.as_view(), name="home"),
+    url(r'^logout$', auth_views.logout, {'next_page': 'home'}, name='logout'),
+    url(r'^edit/(?P<_id>[a-zA-Z0-9]+)?', views.EditView.as_view()),
+    url(r'^run/(?P<_id>[a-zA-Z0-9]+)?', views.RunView.as_view()),
+    url(r'^embed/(?P<_id>[a-zA-Z0-9]+)?', views.EmbedView.as_view()),
+    url('', include('social_django.urls', namespace='social')),
+    url(r'^api/fiddle/(?P<_id>[a-zA-Z0-9]+)?', api.api_fiddle)
 ]
