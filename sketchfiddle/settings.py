@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv("SECRET_KEY") or '5ikm)l4iz$i1)x+0av*0!i5&uspo2-qa*ib20y=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.getenv("DEBUG") or "1"))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["sketchfiddle.com", "www.sketchfiddle.com", "embed.sketchfiddle.com", "localhost"]
 
 
 # Application definition
@@ -182,7 +182,3 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# # Allow all host headers
-# ALLOWED_HOSTS = ['*']
-
