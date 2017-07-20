@@ -8,6 +8,8 @@
 
 			if (evt.type=="run") {
 				eval(evt.code_js);
+			} else if (evt.type=="reload") {
+				window.location.reload();
 			}
 
 		}

@@ -1,12 +1,17 @@
 (function() {
 
+	var loadedCallbacks = [];
+
 	var receiveMessage = function(event) {
 		// TODO check origin
 		if (event.data && event.data.sketchfiddle) {
 			var evt = event.data.sketchfiddle;
 
 			if (evt.type=="runner-loaded") {
-				run();
+				if (loadedCallbacks.length) {
+					var cb = loadedCallbacks.pop();
+					cb();
+				}
 			}
 
 		}
@@ -51,11 +56,21 @@
 		iframe.postMessage({"sketchfiddle": data}, "*");
 	};
 
+	var last_code_js;
+
 	var run = function() {
 
 		var code_js = editor_js.getValue();
 
-		postMessage({"type": "run", "code_js": code_js});
+		if (code_js == last_code_js) return;
+		last_code_js = code_js;
+
+		loadedCallbacks.push(function(){
+			postMessage({"type": "run", "code_js": code_js});
+		});
+
+		// The DOM may have been modified so we reload.
+		postMessage({"type": "reload"});
 
 	};
 
@@ -117,6 +132,7 @@
 		$(".js-sketchfiddle-button-embed").prop("href", "https://embed.sketchfiddle.com/embed/"+fiddle.id);
 	};
 
+	loadedCallbacks.push(run);
 	setup();
 
 })();
