@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from .api import get_fiddle
+from .models import Fiddle
 
 
 class RunView(TemplateView):
@@ -32,4 +33,14 @@ class EmbedView(TemplateView):
             pass
 
         context["fiddle"] = fiddle
+        return context
+
+
+class GalleryView(TemplateView):
+    template_name = "gallery.html"
+
+    def get_context_data(self, **kwargs):
+
+        context = super(GalleryView, self).get_context_data(**kwargs)
+        context["fiddles"] = Fiddle.objects.all().order_by('-updated')
         return context

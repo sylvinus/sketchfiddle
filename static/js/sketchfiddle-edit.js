@@ -114,7 +114,7 @@
             },
             "success": function(data) {
                 if (data.id) {
-                    console.log(data, current_fiddle);
+
                     // Redirect to the new fiddle URL
                     if (current_fiddle.id != data.id) {
                         window.location = window.location.toString().replace(/\/?\#?(edit\/[0-9]+)?$/, "/edit/" + data.id)
@@ -161,5 +161,8 @@
 
     loadedCallbacks.push(run);
     setup();
+
+    $(".js-sketchfiddle-button-save").show();
+    $(".js-sketchfiddle-button-embed").show();
 
 })();

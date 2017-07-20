@@ -4,7 +4,7 @@
 	border:0px;
 }
 
-#editor-code-js {
+#editor-code-js, #editor-code-html {
 	height:600px;
 }
 

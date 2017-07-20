@@ -1,122 +1,65 @@
+{% extends 'base.html' %}
 {% load staticfiles %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% block content %}
+<div class="container-fluid">
 
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="/favicon.ico">
+    <div class="row">
 
-    <title>SketchFiddle</title>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-    <link rel="stylesheet" href="{% static "css/codemirror.css" %}">
-    <link rel="stylesheet" href="{% static "css/codemirror-material.css" %}">
-    <link rel="stylesheet" href="{% static "css/sketchfiddle.css" %}">
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-
-  <body>
-
-    <!-- Static navbar -->
-    <nav class="navbar navbar-default navbar-static-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/">Sketchfiddle</a>
+        <div class="col-md-7">
+            <div class="fiddle-header">
+              <span class="fiddle-name">New project</span><!-- by <a class="fiddle-user">Sketchfab team</a>-->
+            </div>
+            <iframe sandbox="allow-scripts" id="editor-iframe" src="about:blank" style="height:600px"></iframe>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="/" class="js-sketchfiddle-button-new">New</a></li>
-            <li><a href="#" class="js-sketchfiddle-button-save">Save</a></li>
-            <li><a href="#" class="js-sketchfiddle-button-embed">Embed</a></li>
 
-            {% if not user.is_authenticated %}
-              <li><a href="{% url 'social:begin' 'twitter' %}">Login</a></li>
-            {% else %}
-              <li><a href="{% url 'logout' %}">Logout {{ user.username }}</a></li>
-            {% endif %}
-            <!-- <li><a href="#" class="active js-sketchfiddle-button-run">Run</a></li> -->
+        <div class="col-md-5">
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#tab-js" role="tab" data-toggle="tab">JavaScript</a></li>
+            <li role="presentation"><a href="#tab-html" role="tab" data-toggle="tab">HTML</a></li>
+          </ul>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="tab-js">
+              <div id="editor-code-js"></div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="tab-html">
+              <div id="editor-code-html"></div>
+            </div>
+          </div>
 
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a target="_blank" href="https://sketchfab.com/developers/viewer/functions">API Reference</a></li>
-            <li><a target="_blank" href="https://github.com/sylvinus/sketchfiddle">GitHub</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
+        </div>
+
+    </div>
+
+</div> <!-- /container -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="embed-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Embed this Sketchfiddle</h4>
       </div>
-    </nav>
+      <div class="modal-body">
+        <p>Use this code to embed this Sketchfiddle in your website:</p>
+        <textarea style="width:100%;height:70px;" readonly id="embed-code"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
+<script src="{% static "js/codemirror.js" %}"></script>
+<script src="{% static "js/codemirror-javascript.js" %}"></script>
+<script src="{% static "js/codemirror-xml.js" %}"></script>
+<script src="{% static "js/codemirror-htmlmixed.js" %}"></script>
+<script src="{% static "js/codemirror-autorefresh.js" %}"></script>
 
-    <div class="container-fluid">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-        <div class="row">
-
-            <div class="col-md-7">
-                <div class="fiddle-header">
-                  <span class="fiddle-name">New project</span><!-- by <a class="fiddle-user">Sketchfab team</a>-->
-                </div>
-                <iframe sandbox="allow-scripts" id="editor-iframe" src="about:blank" style="height:600px"></iframe>
-            </div>
-
-            <div class="col-md-5">
-              <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active"><a href="#tab-js" role="tab" data-toggle="tab">JavaScript</a></li>
-                <li role="presentation"><a href="#tab-html" role="tab" data-toggle="tab">HTML</a></li>
-              </ul>
-              <div class="tab-content">
-                <div role="tabpanel" class="tab-pane active" id="tab-js">
-                  <div id="editor-code-js"></div>
-                </div>
-                <div role="tabpanel" class="tab-pane" id="tab-html">
-                  <div id="editor-code-html"></div>
-                </div>
-              </div>
-
-            </div>
-
-        </div>
-
-    </div> <!-- /container -->
-
-    <div class="modal fade" tabindex="-1" role="dialog" id="embed-modal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Embed this Sketchfiddle</h4>
-          </div>
-          <div class="modal-body">
-            <p>Use this code to embed this Sketchfiddle in your website:</p>
-            <textarea style="width:100%;height:70px;" readonly id="embed-code"></textarea>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
-    <script src="{% static "js/codemirror.js" %}"></script>
-    <script src="{% static "js/codemirror-javascript.js" %}"></script>
-    <script src="{% static "js/codemirror-xml.js" %}"></script>
-    <script src="{% static "js/codemirror-htmlmixed.js" %}"></script>
-    <script src="{% static "js/codemirror-autorefresh.js" %}"></script>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-    <script src="{% static "js/sketchfiddle-edit.js" %}"></script>
-
-  </body>
-</html>
+<script src="{% static "js/sketchfiddle-edit.js" %}"></script>
+{% endblock %}

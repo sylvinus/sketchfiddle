@@ -21,6 +21,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.EditView.as_view(), name="home"),
+    url(r'^gallery$', views.GalleryView.as_view(), name="gallery"),
     url(r'^logout$', auth_views.logout, {'next_page': 'home'}, name='logout'),
     url(r'^edit/(?P<_id>[a-zA-Z0-9]+)?', views.EditView.as_view()),
     url(r'^run/(?P<_id>[a-zA-Z0-9]+)?', views.RunView.as_view()),

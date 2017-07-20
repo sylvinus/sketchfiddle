@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="row" style="padding-left:30px;">
+
+	<p>Latest edits:</p>
+
+	<ul>
+		{% for fiddle in fiddles %}
+			<li><a href="/edit/{{fiddle.id}}">{{fiddle.name}}</a></li>
+		{% endfor %}
+	</ul>
+
+</div>
+
+{% endblock %}
