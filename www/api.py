@@ -27,7 +27,7 @@ client.init(modelid, {
 """.strip()
 
 DEFAULT_CODE_HTML = """
-    <iframe src="" style="width:100%;border:0;height:100%;" id="sketchfab-embed" frameborder="0" allowvr allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" onmousewheel=""></iframe>
+    <iframe src="" style="width:100%;height:100%;border:0;" id="sketchfab-embed" frameborder="0" allowvr allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" onmousewheel=""></iframe>
 """.strip()
 
 

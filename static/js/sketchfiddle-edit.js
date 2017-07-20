@@ -93,7 +93,7 @@
             });
         });
 
-        // The DOM may have been modified so we reload.
+        // The DOM may have been modified and the global JS namespace polluted so we reload.
         postMessage({"type": "reload"});
 
     };
