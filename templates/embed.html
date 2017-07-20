@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ fiddle.name }}</title>
-
-    <script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.0.1.js"></script>
 </head>
 
 <body style="margin:0;padding:0;overflow:hidden;height:100%;">
 
-    <iframe src="" style="width:100%;border:0;" height="100%" id="sketchfab-embed" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+	{{ fiddle.code_html|safe }}
 
-    <script type="text/javascript">
+	<script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.0.1.js"></script>
+
+    <script type="text/javascript" id="sketchfiddle-javascript">
     	{{ fiddle.code_js|safe }}
     </script>
 

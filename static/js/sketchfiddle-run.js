@@ -7,6 +7,7 @@
 			var evt = event.data.sketchfiddle;
 
 			if (evt.type=="run") {
+				document.getElementsByTagName("body")[0].innerHTML = evt.code_html;
 				eval(evt.code_js);
 			} else if (evt.type=="reload") {
 				window.location.reload();

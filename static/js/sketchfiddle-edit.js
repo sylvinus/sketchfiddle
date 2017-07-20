@@ -1,138 +1,165 @@
 (function() {
 
-	var loadedCallbacks = [];
+    var loadedCallbacks = [];
 
-	var receiveMessage = function(event) {
-		// TODO check origin
-		if (event.data && event.data.sketchfiddle) {
-			var evt = event.data.sketchfiddle;
+    var receiveMessage = function(event) {
+        // TODO check origin
+        if (event.data && event.data.sketchfiddle) {
+            var evt = event.data.sketchfiddle;
 
-			if (evt.type=="runner-loaded") {
-				if (loadedCallbacks.length) {
-					var cb = loadedCallbacks.pop();
-					cb();
-				}
-			}
+            if (evt.type=="runner-loaded") {
+                if (loadedCallbacks.length) {
+                    var cb = loadedCallbacks.pop();
+                    cb();
+                }
+            }
 
-		}
-	};
-	window.addEventListener("message", receiveMessage, false);
+        }
+    };
+    window.addEventListener("message", receiveMessage, false);
 
-	var current_fiddle = {};
-	var editor_js;
+    var current_fiddle = {};
+    var editor_js, editor_html;
 
-	var get_fiddle_id_from_url = function() {
-		var m = window.location.toString().match("\/edit\/([0-9]+)$");
-		if (m) {
-			return m[1];
-		}
-		return "default";
-	};
+    var get_fiddle_id_from_url = function() {
+        var m = window.location.toString().match("\/edit\/([0-9]+)$");
+        if (m) {
+            return m[1];
+        }
+        return "default";
+    };
 
-	var setup = function() {
+    var setup = function() {
 
-		editor_js = CodeMirror($("#editor-code-js")[0], {
-			"mode": "javascript",
-			"lineNumbers": true,
-			"theme": "material"
-		});
+        editor_js = CodeMirror($("#editor-code-js")[0], {
+            "mode": "javascript",
+            "lineNumbers": true,
+            "theme": "material",
+            "lineWrapping": true,
+        });
+        editor_js.on("blur", run);
 
-		editor_js.on("blur", run);
+        editor_html = CodeMirror($("#editor-code-html")[0], {
+            "mode": "htmlmixed",
+            "lineNumbers": true,
+            "theme": "material",
+            "autoRefresh": true,
+            "lineWrapping": true,
+        });
 
-		$("#editor-iframe")[0].src = "/run/";
+        // https://codemirror.net/demo/indentwrap.html
+        var charWidth = editor_html.defaultCharWidth(), basePadding = 4;
+        editor_html.on("renderLine", function(cm, line, elt) {
+          var off = CodeMirror.countColumn(line.text, null, cm.getOption("tabSize")) * charWidth;
+          elt.style.textIndent = "-" + off + "px";
+          elt.style.paddingLeft = (basePadding + off) + "px";
+        });
 
-		$(".js-sketchfiddle-button-run").on("click", run);
-		$(".js-sketchfiddle-button-save").on("click", save);
-		$(".js-sketchfiddle-button-embed").on("click", embed);
+        editor_html.on("blur", run);
 
-		get_fiddle(get_fiddle_id_from_url());
+        $("#editor-iframe")[0].src = "/run/";
 
-	};
+        $(".js-sketchfiddle-button-run").on("click", run);
+        $(".js-sketchfiddle-button-save").on("click", save);
+        $(".js-sketchfiddle-button-embed").on("click", embed);
 
-	var postMessage = function(data) {
+        get_fiddle(get_fiddle_id_from_url());
 
-		var iframe = $("#editor-iframe")[0].contentWindow;
+    };
 
-		iframe.postMessage({"sketchfiddle": data}, "*");
-	};
+    var postMessage = function(data) {
 
-	var last_code_js;
+        var iframe = $("#editor-iframe")[0].contentWindow;
 
-	var run = function() {
+        iframe.postMessage({"sketchfiddle": data}, "*");
+    };
 
-		var code_js = editor_js.getValue();
+    var last_code_js, last_code_html;
 
-		if (code_js == last_code_js) return;
-		last_code_js = code_js;
+    var run = function() {
 
-		loadedCallbacks.push(function(){
-			postMessage({"type": "run", "code_js": code_js});
-		});
+        var code_js = editor_js.getValue();
+        var code_html = editor_html.getValue();
 
-		// The DOM may have been modified so we reload.
-		postMessage({"type": "reload"});
+        if (code_js == last_code_js && code_html == last_code_html) return;
+        last_code_js = code_js;
+        last_code_html = code_html;
 
-	};
+        loadedCallbacks.push(function(){
+            postMessage({
+                "type": "run",
+                "code_js": code_js,
+                "code_html": code_html
+            });
+        });
 
-	var save = function() {
+        // The DOM may have been modified so we reload.
+        postMessage({"type": "reload"});
 
-		var name = window.prompt("Enter a name for this Sketchfiddle!", current_fiddle.name);
-		if (!name) return;
+    };
 
-		$.ajax({
-			"url": "/api/fiddle/" + current_fiddle.id,
-			"method": "POST",
-			"dataType": "json",
-			"data": {
-				"name": name,
-				"code_js": editor_js.getValue()
-			},
-			"success": function(data) {
-				if (data.id) {
-					console.log(data, current_fiddle);
-					// Redirect to the new fiddle URL
-					if (current_fiddle.id != data.id) {
-						window.location = window.location.toString().replace(/\/?\#?(edit\/[0-9]+)?$/, "/edit/" + data.id)
-						return;
-					}
-					set_current_fiddle(data);
-					run();
-				} else {
-					window.alert("Error while saving: " + data.error);
-				}
-			}
-		});
+    var save = function() {
 
-		return false;
-	};
+        var name = window.prompt("Enter a name for this Sketchfiddle!", current_fiddle.name);
+        if (!name) return;
 
-	var embed = function() {
+        $.ajax({
+            "url": "/api/fiddle/" + current_fiddle.id,
+            "method": "POST",
+            "dataType": "json",
+            "data": {
+                "name": name,
+                "code_js": editor_js.getValue(),
+                "code_html": editor_html.getValue()
+            },
+            "success": function(data) {
+                if (data.id) {
+                    console.log(data, current_fiddle);
+                    // Redirect to the new fiddle URL
+                    if (current_fiddle.id != data.id) {
+                        window.location = window.location.toString().replace(/\/?\#?(edit\/[0-9]+)?$/, "/edit/" + data.id)
+                        return;
+                    }
+                    set_current_fiddle(data);
+                    run();
+                } else {
+                    window.alert("Error while saving: " + data.error);
+                }
+            }
+        });
 
-		$("#embed-code").val('<iframe width="640" height="480" src="https://embed.sketchfiddle.com/embed/'+current_fiddle.id+'" frameborder="0" allowvr allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" onmousewheel=""></iframe>');
-		$("#embed-modal").modal();
+        return false;
+    };
 
-		return false;
-	};
+    var embed = function() {
 
-	var get_fiddle = function(id) {
-		$.ajax({
-			"url": "/api/fiddle/" + id,
-			"method": "GET",
-			"dataType": "json",
-			"success": function(data) {
-				set_current_fiddle(data);
-			}
-		});
-	};
+        $("#embed-code").val('<iframe width="640" height="480" src="https://embed.sketchfiddle.com/embed/'+current_fiddle.id+'" frameborder="0" allowvr allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" onmousewheel=""></iframe>');
+        $("#embed-modal").modal();
 
-	var set_current_fiddle = function(fiddle) {
-		editor_js.setValue(fiddle.code_js);
-		current_fiddle = fiddle;
+        return false;
+    };
 
-		$(".js-sketchfiddle-button-embed").prop("href", "https://embed.sketchfiddle.com/embed/"+fiddle.id);
-	};
+    var get_fiddle = function(id) {
+        $.ajax({
+            "url": "/api/fiddle/" + id,
+            "method": "GET",
+            "dataType": "json",
+            "success": function(data) {
+                set_current_fiddle(data);
+            }
+        });
+    };
 
-	loadedCallbacks.push(run);
-	setup();
+    var set_current_fiddle = function(fiddle) {
+        editor_js.setValue(fiddle.code_js);
+        editor_html.setValue(fiddle.code_html);
+        current_fiddle = fiddle;
+
+        $(".js-sketchfiddle-button-embed").prop("href", "https://embed.sketchfiddle.com/embed/"+fiddle.id);
+        $(".fiddle-name").html(fiddle.name);
+    };
+
+    loadedCallbacks.push(run);
+    setup();
 
 })();

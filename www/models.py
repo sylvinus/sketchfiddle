@@ -12,6 +12,7 @@ class Fiddle(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
 
     code_js = models.TextField(blank=True, null=False)
+    code_html = models.TextField(blank=True, null=False)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -20,7 +21,8 @@ class Fiddle(models.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "code_js": self.code_js
+            "code_js": self.code_js,
+            "code_html": self.code_html
         }
 
     def __unicode__(self):

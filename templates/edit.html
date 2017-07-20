@@ -62,12 +62,26 @@
         <div class="row">
 
             <div class="col-md-7">
+                <div class="fiddle-header">
+                  <span class="fiddle-name">New project</span><!-- by <a class="fiddle-user">Sketchfab team</a>-->
+                </div>
                 <iframe sandbox="allow-scripts" id="editor-iframe" src="about:blank" style="height:600px"></iframe>
             </div>
 
             <div class="col-md-5">
-                <div id="editor-code-js">
+              <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#tab-js" role="tab" data-toggle="tab">JavaScript</a></li>
+                <li role="presentation"><a href="#tab-html" role="tab" data-toggle="tab">HTML</a></li>
+              </ul>
+              <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="tab-js">
+                  <div id="editor-code-js"></div>
                 </div>
+                <div role="tabpanel" class="tab-pane" id="tab-html">
+                  <div id="editor-code-html"></div>
+                </div>
+              </div>
+
             </div>
 
         </div>
@@ -94,6 +108,9 @@
 
     <script src="{% static "js/codemirror.js" %}"></script>
     <script src="{% static "js/codemirror-javascript.js" %}"></script>
+    <script src="{% static "js/codemirror-xml.js" %}"></script>
+    <script src="{% static "js/codemirror-htmlmixed.js" %}"></script>
+    <script src="{% static "js/codemirror-autorefresh.js" %}"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
