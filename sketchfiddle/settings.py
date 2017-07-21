@@ -27,6 +27,11 @@ DEBUG = bool(int(os.getenv("DEBUG") or "1"))
 
 ALLOWED_HOSTS = ["sketchfiddle.com", "www.sketchfiddle.com", "embed.sketchfiddle.com", "localhost"]
 
+# Reminder: we're using cloudflare in prod
+if os.getenv("SECRET_KEY"):
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_CF_VISITOR', '{"scheme":"https"}')
+
 
 # Application definition
 
@@ -52,7 +57,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware'
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "sketchfiddle.middlewares.RemoveWWW"
 ]
 
 ROOT_URLCONF = 'sketchfiddle.urls'
