@@ -18,12 +18,16 @@ class Fiddle(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def dump(self):
-        return {
+        data = {
             "id": self.id,
             "name": self.name,
             "code_js": self.code_js,
             "code_html": self.code_html
         }
+        if self.user:
+            data["username"] = self.user.username
+
+        return data
 
     def __unicode__(self):
         return self.name

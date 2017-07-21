@@ -61,7 +61,7 @@
 
         $(".js-sketchfiddle-button-run").on("click", run);
         $(".js-sketchfiddle-button-save").on("click", save);
-        $(".js-sketchfiddle-button-embed").on("click", embed);
+        $("nav .js-sketchfiddle-button-embed").on("click", embed);
 
         get_fiddle(get_fiddle_id_from_url());
 
@@ -157,6 +157,11 @@
 
         $(".js-sketchfiddle-button-embed").prop("href", "https://embed.sketchfiddle.com/embed/"+fiddle.id);
         $(".fiddle-name").html(fiddle.name);
+        if (fiddle.username) {
+            $(".fiddle-user").html("by "+fiddle.username).show();
+        } else {
+            $(".fiddle-user").hide();
+        }
     };
 
     loadedCallbacks.push(run);

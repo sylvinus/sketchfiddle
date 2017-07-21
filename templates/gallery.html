@@ -9,7 +9,7 @@
 
 	<ul>
 		{% for fiddle in fiddles %}
-			<li><a href="/edit/{{fiddle.id}}">{{fiddle.name}}</a></li>
+			<li><a href="/edit/{{fiddle.id}}">{{fiddle.name}}</a> {% if fiddle.user %} by {{ fiddle.user.username }}{%endif%}</li>
 		{% endfor %}
 	</ul>
 
